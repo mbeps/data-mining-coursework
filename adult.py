@@ -19,31 +19,43 @@ def read_csv_1(data_file: str) -> DataFrame:
 
 
 # Return the number of rows in the pandas dataframe df.
-def num_rows(df):
-    pass
-
+def num_rows(df: DataFrame) -> int:
+    """Return the number of rows in the dataframe."""
+    return len(df)
 
 # Return a list with the column names in the pandas dataframe df.
-def column_names(df):
-    pass
+def column_names(df: DataFrame) -> List[str]:
+    """Return a list of column names in the dataframe."""
+    return list(df.columns)
 
 
 # Return the number of missing values in the pandas dataframe df.
-def missing_values(df):
-    pass
+def missing_values(df: DataFrame) -> int:
+    """Return the total number of missing values in the dataframe."""
+    return df.isna().sum().sum()
 
 
 # Return a list with the columns names containing at least one missing value in the pandas dataframe df.
-def columns_with_missing_values(df):
-    pass
+def columns_with_missing_values(df: pd.DataFrame) -> List[str]:
+    """Return list of column names that have at least one missing value."""
+    return list(df.columns[df.isna().any()])
+
 
 
 # Return the percentage of instances corresponding to persons whose education level is
 # Bachelors or Masters (by rounding to the first decimal digit)
 # in the pandas dataframe df containing the data set in the adult.csv file.
 # For example, if the percentage is 21.547%, then the function should return 21.6.
-def bachelors_masters_percentage(df):
-    pass
+
+def bachelors_masters_percentage(df: pd.DataFrame) -> float:
+    """
+    Calculate percentage of instances with education level Bachelors or Masters.
+    Returns rounded to 1 decimal place.
+    """
+    education_count: int = df['education'].isin(['Bachelors', 'Masters']).sum()
+    percentage: float = (education_count / len(df)) * 100
+    return round(percentage, 1)
+
 
 
 # Return a pandas dataframe (new copy) obtained from the pandas dataframe df
