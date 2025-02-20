@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "data-mining-coursework"
+version = "0.1.0"
+description = "Coursework for the Data Mining module (7CCSMDM1) at King's College London "
+authors = ["Maruf Bepary <bepary71@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+pandas = "^2.1.1"
+scikit-learn = "^1.3.2"
+matplotlib = "^3.8.0"
+numpy = "^1.26.1"
+more-itertools = "^10.6.0"
+requests = "^2.32.3"
+nltk = "^3.9.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
