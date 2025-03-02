@@ -98,7 +98,7 @@ def label_encoding(df: DataFrame) -> Series:
 # and labels y_train for the training instances,
 # build a decision tree and use it to predict labels for X_train.
 # Return a pandas series with the predicted values.
-def dt_predict(X_train, y_train):
+def dt_predict(X_train: pd.DataFrame, y_train: pd.Series) -> pd.Series:
     """Build a decision tree and make predictions on training data."""
     clf = DecisionTreeClassifier(random_state=42)
     clf.fit(X_train, y_train)
@@ -107,6 +107,6 @@ def dt_predict(X_train, y_train):
 
 # Given a pandas series y_pred with the predicted labels and a pandas series y_true with the true labels,
 # compute the error rate of the classifier that produced y_pred.
-def dt_error_rate(y_pred, y_true):
+def dt_error_rate(y_pred: pd.Series, y_true: pd.Series) -> float:
     """Calculate the error rate of predictions."""
     return (y_pred != y_true).mean()
