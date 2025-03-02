@@ -1,35 +1,70 @@
-# Part 3: Text mining.
+import pandas as pd
+from typing import List
+import numpy as np
 
-# Return a pandas dataframe containing the data set.
-# Specify a 'latin-1' encoding when reading the data.
-# data_file will be populated with a string 
-# corresponding to a path containing the wholesale_customers.csv file.
-def read_csv_3(data_file):
-	pass
+def read_csv_3(data_file: str) -> pd.DataFrame:
+    """
+    Return a pandas dataframe containing the dataset.
+    Uses 'latin-1' encoding.
+    """
+    df = pd.read_csv(data_file, encoding='latin-1')
+    return df
 
-# Return a list with the possible sentiments that a tweet might have.
-def get_sentiments(df):
-	pass
+def get_sentiments(df: pd.DataFrame) -> List[str]:
+    """
+    Return a list with the possible sentiments that a tweet might have.
+    """
+    # Use unique to get possible sentiments and convert to list.
+    sentiments = df['Sentiment'].dropna().unique().tolist()
+    return sentiments
 
-# Return a string containing the second most popular sentiment among the tweets.
-def second_most_popular_sentiment(df):
-	pass
+def second_most_popular_sentiment(df: pd.DataFrame) -> str:
+    """
+    Return a string containing the second most popular sentiment among the tweets.
+    """
+    # Count the frequency of each sentiment.
+    sentiment_counts = df['Sentiment'].value_counts()
+    if len(sentiment_counts) < 2:
+        # In case there is only one sentiment or none.
+        return sentiment_counts.index[0] if len(sentiment_counts) == 1 else ""
+    # Return the sentiment with the second highest frequency.
+    return sentiment_counts.index[1]
 
-# Return the date (string as it appears in the data) with the greatest number of extremely positive tweets.
-def date_most_popular_tweets(df):
-	pass
+def date_most_popular_tweets(df: pd.DataFrame) -> str:
+    """
+    Return the date (as it appears in the data) with the greatest number of extremely positive tweets.
+    """
+    # Filter tweets with sentiment "Extremely Positive"
+    extremely_positive = df[df['Sentiment'] == 'Extremely Positive']
+    if extremely_positive.empty:
+        return ""
+    # Count tweets by date (TweetAt column) and return the date with the highest count.
+    date_counts = extremely_positive['TweetAt'].value_counts()
+    return date_counts.idxmax()
 
-# Modify the dataframe df by converting all tweets to lower case. 
-def lower_case(df):
-	pass
+def lower_case(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Modify the dataframe by converting all tweets to lower case.
+    """
+    # Assume tweets are in the "OriginalTweet" column.
+    df['OriginalTweet'] = df['OriginalTweet'].str.lower()
+    return df
 
-# Modify the dataframe df by replacing each characters which is not alphabetic or whitespace with a whitespace.
-def remove_non_alphabetic_chars(df):
-	pass
+def remove_non_alphabetic_chars(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Modify the dataframe by replacing every character that is not alphabetical or whitespace with a whitespace.
+    """
+    df['OriginalTweet'] = df['OriginalTweet'].str.replace(r'[^a-zA-Z\s]', ' ', regex=True)
+    return df
 
-# Modify the dataframe df with tweets after removing characters which are not alphabetic or whitespaces.
-def remove_multiple_consecutive_whitespaces(df):
-	pass
+def remove_multiple_consecutive_whitespaces(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Modify the dataframe by replacing multiple consecutive whitespaces with a single whitespace
+    and trimming leading/trailing spaces.
+    """
+    df['OriginalTweet'] = df['OriginalTweet'].str.replace(r'\s+', ' ', regex=True).str.strip()
+    return df
+
 
 # Given a dataframe where each tweet is one string with words separated by single whitespaces,
 # tokenize every tweet by converting it into a list of words (strings).
