@@ -71,14 +71,6 @@ def standardize(df):
 
 
 # Given a dataframe df and a number of clusters k, return a pandas series y
-# specifying an assignment of instances to clusters, using kmeans.
-# y should contain values in the set {0,1,...,k-1}.
-# To see the impact of the random initialization,
-# using only one set of initial centroids in the kmeans run.
-def kmeans(df, k):
-	pass
-
-# Given a dataframe df and a number of clusters k, return a pandas series y
 # specifying an assignment of instances to clusters, using kmeans++.
 # y should contain values from the set {0,1,...,k-1}.
 def kmeans(df, k):
