@@ -1,16 +1,53 @@
+import pandas as pd
+from typing import List
+from pandas.core.frame import DataFrame
+from pandas.core.series import Series
+from sklearn.preprocessing import LabelEncoder  # type: ignore
+from sklearn.tree import DecisionTreeClassifier  # type: ignore
+
 # Part 2: Cluster Analysis
 
 # Return a pandas dataframe containing the data set that needs to be extracted from the data_file.
 # data_file will be populated with the string 'wholesale_customers.csv'.
 def read_csv_2(data_file):
-	pass
+    """
+    Return a pandas dataframe containing the data set that needs to be extracted from the data_file.
+    data_file will be populated with the string 'wholesale_customers.csv'.
+    """
+    # Read the CSV file
+    df = pd.read_csv(data_file)
+    
+    # Drop the Channel and Region columns
+    df = df.drop(['Channel', 'Region'], axis=1)
+    
+    return df
 
 # Return a pandas dataframe with summary statistics of the data.
 # Namely, 'mean', 'std' (standard deviation), 'min', and 'max' for each attribute.
 # These strings index the new dataframe columns. 
 # Each row should correspond to an attribute in the original data and be indexed with the attribute name.
 def summary_statistics(df):
-	pass
+    """
+    Return a pandas dataframe with summary statistics of the data.
+    Namely, 'mean', 'std' (standard deviation), 'min', and 'max' for each attribute.
+    These strings index the new dataframe columns.
+    Each row should correspond to an attribute in the original data and be indexed with the attribute name.
+    """
+    # Calculate statistics
+    mean_values = df.mean().round().astype(int)  # Round to closest integer
+    std_values = df.std().round().astype(int)    # Round to closest integer
+    min_values = df.min()
+    max_values = df.max()
+    
+    # Create a new dataframe with the summary statistics
+    summary_df = pd.DataFrame({
+        'mean': mean_values,
+        'std': std_values,
+        'min': min_values,
+        'max': max_values
+    })
+    
+    return summary_df
 
 # Given a dataframe df with numeric values, return a dataframe (new copy)
 # where each attribute value is subtracted by the mean and then divided by the
