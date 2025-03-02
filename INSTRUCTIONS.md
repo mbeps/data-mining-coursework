@@ -22,21 +22,21 @@ It is important that you carefully follow all coursework instructions because th
 
 This part uses the [adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) from the UCI Machine Learning Repository to predict whether the income of an individual exceeds 50K per year based on 14 attributes. The attribute `fnlwgt` should be dropped, and the following attributes should be taken into consideration:
 
-| Attribute        | Description                          |
-|-----------------|----------------------------------|
-| age            | Age group                         |
-| workclass      | Type of employment               |
-| education      | Level of education reached       |
-| education-num  | Number of education years       |
-| marital-status | Type of marital status          |
-| occupation     | Occupation domain               |
-| relationship   | Type of relationship involved   |
-| race          | Social category                 |
-| sex           | Male or female                  |
-| capital-gain  | Class of capital gains          |
-| capital-loss  | Class of capital losses         |
-| hours-per-week | Category of working hours      |
-| native-country | Country of birth               |
+| Attribute      | Description                   |
+| -------------- | ----------------------------- |
+| age            | Age group                     |
+| workclass      | Type of employment            |
+| education      | Level of education reached    |
+| education-num  | Number of education years     |
+| marital-status | Type of marital status        |
+| occupation     | Occupation domain             |
+| relationship   | Type of relationship involved |
+| race           | Social category               |
+| sex            | Male or female                |
+| capital-gain   | Class of capital gains        |
+| capital-loss   | Class of capital losses       |
+| hours-per-week | Category of working hours     |
+| native-country | Country of birth              |
 
 ### Tasks
 
@@ -61,13 +61,13 @@ This part uses the [adult data set](https://archive.ics.uci.edu/ml/datasets/Adul
 
 This part uses the [wholesale customers data set](https://archive.ics.uci.edu/ml/datasets/wholesale+customers) from the UCI Machine Learning Repository to identify similar groups of customers based on 8 attributes. The attributes **Channel** and **Region** should be dropped, and only the following 6 numeric attributes should be considered:
 
-| Attribute     | Description                           |
-|--------------|-----------------------------------|
-| Fresh       | Annual expenses on fresh products |
-| Milk        | Annual expenses on milk products  |
-| Grocery     | Annual expenses on grocery products |
-| Frozen      | Annual expenses on frozen products |
-| Detergent   | Annual expenses on detergent products |
+| Attribute    | Description                              |
+| ------------ | ---------------------------------------- |
+| Fresh        | Annual expenses on fresh products        |
+| Milk         | Annual expenses on milk products         |
+| Grocery      | Annual expenses on grocery products      |
+| Frozen       | Annual expenses on frozen products       |
+| Detergent    | Annual expenses on detergent products    |
 | Delicatessen | Annual expenses on delicatessen products |
 
 ### Tasks
@@ -84,14 +84,14 @@ This part uses the [wholesale customers data set](https://archive.ics.uci.edu/ml
 
 This part uses the [Coronavirus Tweets NLP data set](https://www.kaggle.com/datatattle/covid-19-nlp-text-classification) from Kaggle to predict the sentiment of tweets related to COVID-19. The dataset contains 6 attributes:
 
-| Attribute       | Description                         |
-|---------------|---------------------------------|
-| UserName      | Anonymised attribute           |
-| ScreenName    | Anonymised attribute           |
+| Attribute     | Description                     |
+| ------------- | ------------------------------- |
+| UserName      | Anonymised attribute            |
+| ScreenName    | Anonymised attribute            |
 | Location      | Location of the person tweeting |
 | TweetAt       | Date                            |
-| OriginalTweet | Text content of the tweet      |
-| Sentiment     | Emotion of the tweet           |
+| OriginalTweet | Text content of the tweet       |
+| Sentiment     | Emotion of the tweet            |
 
 ### Tasks
 
