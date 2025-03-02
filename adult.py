@@ -1,7 +1,9 @@
 import pandas as pd
 from typing import List
 from pandas.core.frame import DataFrame
-
+from pandas.core.series import Series
+from sklearn.preprocessing import LabelEncoder  # type: ignore
+from sklearn.tree import DecisionTreeClassifier  # type: ignore
 
 # Part 1: Decision Trees with Categorical Attributes
 
@@ -60,33 +62,51 @@ def bachelors_masters_percentage(df: pd.DataFrame) -> float:
 
 # Return a pandas dataframe (new copy) obtained from the pandas dataframe df
 # by removing all instances with at least one missing value.
-def data_frame_without_missing_values(df):
-    pass
-
+def data_frame_without_missing_values(df: DataFrame) -> DataFrame:
+    """Remove all instances with at least one missing value."""
+    return df.dropna()
 
 # Return a pandas dataframe (new copy) from the pandas dataframe df
 # by converting the df categorical attributes to numeric using one-hot encoding.
 # The function's output should not contain the target attribute.
-def one_hot_encoding(df):
-    pass
+def one_hot_encoding(df: DataFrame) -> DataFrame:
+    """
+    Convert categorical attributes to numeric using one-hot encoding.
+    Excludes the target attribute (class).
+    """
+    # Drop the target column before encoding
+    X: DataFrame = df.drop('class', axis=1)
+    
+    # Get numeric columns to exclude from encoding
+    numeric_cols = X.select_dtypes(include=['int64', 'float64']).columns
+    
+    # One-hot encode all non-numeric columns
+    encoded_df: DataFrame = pd.get_dummies(X, columns=[col for col in X.columns if col not in numeric_cols])
+    
+    return encoded_df
 
 
 # Return a pandas series (new copy), from the pandas dataframe df,
 # containing only one column with the labels of the df instances
 # converted to numeric using label encoding.
-def label_encoding(df):
-    pass
-
+def label_encoding(df: DataFrame) -> Series:
+    """Convert target labels to numeric using label encoding."""
+    le = LabelEncoder()
+    return pd.Series(le.fit_transform(df['class']))
 
 # Given a training set X_train containing the input attribute values
 # and labels y_train for the training instances,
 # build a decision tree and use it to predict labels for X_train.
 # Return a pandas series with the predicted values.
 def dt_predict(X_train, y_train):
-    pass
+    """Build a decision tree and make predictions on training data."""
+    clf = DecisionTreeClassifier(random_state=42)
+    clf.fit(X_train, y_train)
+    return pd.Series(clf.predict(X_train))
 
 
 # Given a pandas series y_pred with the predicted labels and a pandas series y_true with the true labels,
 # compute the error rate of the classifier that produced y_pred.
 def dt_error_rate(y_pred, y_true):
-    pass
+    """Calculate the error rate of predictions."""
+    return (y_pred != y_true).mean()
