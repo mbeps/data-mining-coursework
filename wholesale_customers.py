@@ -72,7 +72,7 @@ def standardize(df):
 # Given a dataframe df and a number of clusters k, return a pandas series y
 # specifying an assignment of instances to clusters, using kmeans++.
 # y should contain values from the set {0,1,...,k-1}.
-def kmeans(df, k):
+def kmeans(df: pd.DataFrame, k: int) -> pd.Series:
     """
     Given a dataframe df and a number of clusters k, return a pandas series y
     specifying an assignment of instances to clusters, using kmeans.
@@ -80,9 +80,10 @@ def kmeans(df, k):
     To see the impact of the random initialization,
     using only one set of initial centroids in the kmeans run.
     """
-    from sklearn.cluster import KMeans # type: ignore
+    from sklearn.cluster import KMeans  # type: ignore
     
-    kmeans_model = KMeans(n_clusters=k, random_state=42)
+    # Explicitly set init='random' for standard K-means
+    kmeans_model = KMeans(n_clusters=k, init='random', random_state=42)
     kmeans_model.fit(df)
     y = pd.Series(kmeans_model.labels_, index=df.index)
     
@@ -92,7 +93,7 @@ def kmeans(df, k):
 # Given a dataframe df and a number of clusters k, return a pandas series y
 # specifying an assignment of instances to clusters, using agglomerative hierarchical clustering.
 # y should contain values from the set {0,1,...,k-1}.
-def kmeans_plus(df, k):
+def kmeans_plus(df: pd.DataFrame, k: int) -> Series[float]:
     """
     Given a dataframe df and a number of clusters k, return a pandas series y
     specifying an assignment of instances to clusters, using kmeans++.
@@ -110,7 +111,7 @@ def kmeans_plus(df, k):
 
 # Given a data set X and an assignment to clusters y
 # return the Silhouette score of this set of clusters.
-def agglomerative(df, k):
+def agglomerative(df: pd.DataFrame, k: int) -> Series[float]:
     """
     Given a dataframe df and a number of clusters k, return a pandas series y
     specifying an assignment of instances to clusters, using agglomerative hierarchical clustering.
@@ -131,12 +132,12 @@ def agglomerative(df, k):
 # 'data' type: either 'Original' or 'Standardized',
 # 'k': the number of clusters produced,
 # 'Silhouette Score': for evaluating the resulting set of clusters.
-def clustering_score(X, y):
+def clustering_score(X: pd.DataFrame, y: Series[float]) -> float:
     """
     Given a data set X and an assignment to clusters y
     return the Silhouette score of this set of clusters.
     """
-    from sklearn.metrics import silhouette_score
+    from sklearn.metrics import silhouette_score # type: ignore
     
     # The silhouette score is only defined if k is between 2 and n-1 where n is the number of samples
     if len(set(y)) <= 1 or len(set(y)) >= len(X):
