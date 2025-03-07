@@ -58,7 +58,6 @@ def standardize(df):
     where each attribute value is subtracted by the mean and then divided by the
     standard deviation for that attribute.
     """
-    # Create a new copy of the dataframe
     df_standardized = df.copy()
     
     # Standardize each column
@@ -81,15 +80,10 @@ def kmeans(df, k):
     To see the impact of the random initialization,
     using only one set of initial centroids in the kmeans run.
     """
-    from sklearn.cluster import KMeans
+    from sklearn.cluster import KMeans # type: ignore
     
-    # Initialize KMeans with k clusters and a fixed random_state
     kmeans_model = KMeans(n_clusters=k, random_state=42)
-    
-    # Fit the model to the data
     kmeans_model.fit(df)
-    
-    # Return the cluster assignments as a pandas Series
     y = pd.Series(kmeans_model.labels_, index=df.index)
     
     return y
@@ -109,11 +103,7 @@ def kmeans_plus(df, k):
     # Initialize KMeans with k clusters and kmeans++ initialization
     # In scikit-learn, init='k-means++' is the default
     kmeans_model = KMeans(n_clusters=k, init='k-means++', random_state=42)
-    
-    # Fit the model to the data
     kmeans_model.fit(df)
-    
-    # Return the cluster assignments as a pandas Series
     y = pd.Series(kmeans_model.labels_, index=df.index)
     
     return y
@@ -128,15 +118,9 @@ def agglomerative(df, k):
     """
     from sklearn.cluster import AgglomerativeClustering
     
-    # Initialize AgglomerativeClustering with k clusters
     agg = AgglomerativeClustering(n_clusters=k)
-    
-    # Fit the model to the data
     agg.fit(df)
-    
-    # Return the cluster assignments as a pandas Series
     y = pd.Series(agg.labels_, index=df.index)
-    
     return y
 
 # Perform the cluster evaluation described in the coursework description.
@@ -154,12 +138,10 @@ def clustering_score(X, y):
     """
     from sklearn.metrics import silhouette_score
     
-    # The silhouette score is only defined if k is between 2 and n-1
-    # where n is the number of samples
+    # The silhouette score is only defined if k is between 2 and n-1 where n is the number of samples
     if len(set(y)) <= 1 or len(set(y)) >= len(X):
         return 0.0
     
-    # Calculate and return the silhouette score
     return silhouette_score(X, y)
 
 
@@ -177,17 +159,11 @@ def cluster_evaluation(df):
     'Silhouette Score': for evaluating the resulting set of clusters.
     """
     from sklearn.cluster import KMeans
-    
-    # Create a standardized version of the dataset
-    df_standardized = standardize(df)
-    
-    # Define the k values to use
+
+    df_standardized = standardize(df)    
     k_values = [3, 5, 10]
-    
-    # Initialize a list to store the results
     results = []
     
-    # For each k value
     for k in k_values:
         # For each data type (original and standardized)
         for data_type, data in [('Original', df), ('Standardized', df_standardized)]:
@@ -217,7 +193,6 @@ def cluster_evaluation(df):
     
     # Convert the results to a pandas DataFrame
     results_df = pd.DataFrame(results)
-    
     return results_df
 
 def best_clustering_score(rdf):
@@ -239,21 +214,18 @@ def scatter_plots(df):
     Run the Kmeans algorithm with k=3 by using the standardized data set.
     Generate a scatter plot for each pair of attributes.
     Data points in different clusters should appear with different colors.
+    Each plot is saved to a file in the project root directory.
     """
     import matplotlib.pyplot as plt
     import itertools
+    import os
     
-    # Standardize the dataset
-    df_standardized = standardize(df)
-    
-    # Run KMeans with k=3 on the standardized dataset
+    df_standardized = standardize(df)    
     y = kmeans(df_standardized, 3)
     
-    # Get all pairs of attributes
     attributes = df.columns
     attribute_pairs = list(itertools.combinations(attributes, 2))
     
-    # Create scatter plots for each pair of attributes
     for attr1, attr2 in attribute_pairs:
         plt.figure(figsize=(8, 6))
         
@@ -273,5 +245,7 @@ def scatter_plots(df):
         plt.legend()
         plt.grid(True, linestyle='--', alpha=0.5)
         plt.tight_layout()
-        plt.show()
-
+        
+        filename = f"cluster_plot_{attr1}_vs_{attr2}.png"
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.close()  # Close the figure to free memory
