@@ -1,14 +1,16 @@
 import re
 import warnings
 from typing import List
-
+from pandas import DataFrame, Series
+from sklearn.naive_bayes import MultinomialNB, ComplementNB # type: ignore
+import numpy as np
+import re
 import numpy as np
 import pandas as pd
 import requests
 from nltk.stem import PorterStemmer  # type: ignore
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer  # type: ignore
 from sklearn.model_selection import GridSearchCV  # type: ignore
-from sklearn.naive_bayes import MultinomialNB  # type: ignore
 from sklearn.pipeline import Pipeline  # type: ignore
 
 
@@ -17,16 +19,14 @@ def read_csv_3(data_file: str) -> pd.DataFrame:
     Return a pandas dataframe containing the data set.
     Uses 'latin-1' encoding.
     """
-    df = pd.read_csv(data_file, encoding="latin-1")
-    return df
+    return pd.read_csv(data_file, encoding="latin-1")
 
 
 def get_sentiments(df: pd.DataFrame) -> List[str]:
     """
     Return a list with the possible sentiments that a tweet might have.
     """
-    sentiments = df["Sentiment"].dropna().unique().tolist()
-    return sentiments
+    return df["Sentiment"].dropna().unique().tolist()
 
 
 def second_most_popular_sentiment(df: pd.DataFrame) -> str:
@@ -44,10 +44,10 @@ def date_most_popular_tweets(df: pd.DataFrame) -> str:
     Return the date (string as it appears in the data)
     with the greatest number of extremely positive tweets.
     """
-    extremely_positive = df[df["Sentiment"] == "Extremely Positive"]
+    extremely_positive: DataFrame = df[df["Sentiment"] == "Extremely Positive"]
     if extremely_positive.empty:
         return ""
-    date_counts = extremely_positive["TweetAt"].value_counts()
+    date_counts: Series = extremely_positive["TweetAt"].value_counts()
     return str(date_counts.idxmax())
 
 
@@ -100,9 +100,7 @@ def count_words_with_repetitions(tdf: pd.DataFrame) -> int:
     Given dataframe tdf with the tweets tokenized,
     return the number of words in all tweets including repetitions.
     """
-    # Summation of lengths of each token list
-    total_words = tdf["tokenized"].apply(len).sum()
-    return total_words
+    return tdf["tokenized"].apply(len).sum()
 
 
 def count_words_without_repetitions(tdf: pd.DataFrame) -> int:
@@ -131,7 +129,6 @@ def frequent_words(tdf: pd.DataFrame, k: int) -> List[str]:
     freq_counter = Counter(all_tokens)
     # Extract the k most common words
     most_common = freq_counter.most_common(k)
-    # Return only the words (without counts)
     return [word for word, _ in most_common]
 
 
@@ -177,13 +174,8 @@ def mnb_predict(df: pd.DataFrame) -> np.ndarray:
     Return predicted sentiments (e.g. 'Neutral', 'Positive') for the training set
     as a 1d array (numpy.ndarray).
     """
-    from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-    from sklearn.naive_bayes import MultinomialNB, ComplementNB
-    import numpy as np
-    import re
-
     # Further enhanced text preprocessing for tweets
-    def preprocess_text(text):
+    def preprocess_text(text: str) -> str:
         if not isinstance(text, str):
             return ""
         # Convert to lowercase
@@ -220,7 +212,7 @@ def mnb_predict(df: pd.DataFrame) -> np.ndarray:
     y = np.array(df["Sentiment"].values)
 
     # Define parameter combinations to try
-    count_vectorizer_params = [
+    count_vectorizer_params: list[tuple] = [
         # min_df, max_df, ngram_range, max_features, stop_words, analyzer, binary
         (1, 0.9, (1, 1), 5000, "english", "word", False),
         (2, 0.9, (1, 2), 10000, "english", "word", False),
@@ -231,7 +223,7 @@ def mnb_predict(df: pd.DataFrame) -> np.ndarray:
         (2, 0.95, (1, 3), 25000, "english", "word", False),  # More features
     ]
 
-    tfidf_vectorizer_params = [
+    tfidf_vectorizer_params: list[tuple] = [
         # min_df, max_df, ngram_range, max_features, use_idf, norm, stop_words, analyzer, binary, sublinear_tf
         (1, 0.9, (1, 1), 5000, True, "l2", "english", "word", False, False),
         (2, 0.9, (1, 2), 10000, True, "l2", "english", "word", False, False),
@@ -408,5 +400,5 @@ def mnb_accuracy(y_pred: np.ndarray, y_true: np.ndarray) -> float:
     (e.g. 'Neutral', 'Positive') by a classifier and another 1d array y_true with
     the true labels, return the classification accuracy rounded to the 3rd decimal digit.
     """
-    accuracy = np.mean(y_pred == y_true)
+    accuracy: float = np.mean(y_pred == y_true)
     return round(accuracy, 3)

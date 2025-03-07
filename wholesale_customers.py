@@ -6,8 +6,6 @@ from pandas.core.series import Series
 from sklearn.preprocessing import LabelEncoder  # type: ignore
 from sklearn.tree import DecisionTreeClassifier  # type: ignore
 from sklearn.cluster import AgglomerativeClustering  # type: ignore
-from sklearn.cluster import KMeans
-from sklearn.cluster import KMeans
 from sklearn.cluster import KMeans  # type: ignore
 import matplotlib.pyplot as plt
 import itertools
