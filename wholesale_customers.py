@@ -1,17 +1,14 @@
-import pandas as pd
+import itertools
 from typing import List
+from typing import Any
+
+import matplotlib.pyplot as plt
+import pandas as pd
 from pandas import Index
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
-from sklearn.preprocessing import LabelEncoder  # type: ignore
-from sklearn.tree import DecisionTreeClassifier  # type: ignore
-from sklearn.cluster import AgglomerativeClustering  # type: ignore
-from sklearn.cluster import KMeans  # type: ignore
-import matplotlib.pyplot as plt
-import itertools
-import os
+from sklearn.cluster import AgglomerativeClustering, KMeans  # type: ignore
 from sklearn.metrics import silhouette_score  # type: ignore
-
 
 # Part 2: Cluster Analysis
 
@@ -22,12 +19,14 @@ def read_csv_2(data_file: str) -> DataFrame:
     """
     Return a pandas dataframe containing the data set that needs to be extracted from the data_file.
     data_file will be populated with the string 'wholesale_customers.csv'.
+
+    Args:
+        data_file: The path to the data file.
+    Returns:
+        A pandas dataframe containing the data set.
     """
     df: DataFrame = pd.read_csv(data_file)
-
-    # Drop the Channel and Region columns
     df = df.drop(["Channel", "Region"], axis=1)
-
     return df
 
 
@@ -41,6 +40,11 @@ def summary_statistics(df: DataFrame) -> DataFrame:
     Namely, 'mean', 'std' (standard deviation), 'min', and 'max' for each attribute.
     These strings index the new dataframe columns.
     Each row should correspond to an attribute in the original data and be indexed with the attribute name.
+
+    Args:
+        df: The pandas dataframe containing the data set.
+    Returns:
+        A pandas dataframe with summary statistics of the data.
     """
     # Calculate statistics
     mean_values: Series = df.mean().round().astype(int)
@@ -64,35 +68,35 @@ def standardize(df: DataFrame) -> DataFrame:
     Given a dataframe df with numeric values, return a dataframe (new copy)
     where each attribute value is subtracted by the mean and then divided by the
     standard deviation for that attribute.
+
+    Args:
+        df: The pandas dataframe containing the data set.
+    Returns:
+        A new pandas dataframe with standardized values.
     """
     df_standardized: DataFrame = df.copy()
-
-    # Standardize each column
-    for column in df_standardized.columns:
-        mean: float = df_standardized[column].mean()
-        std: float = df_standardized[column].std()
-        df_standardized[column] = (df_standardized[column] - mean) / std
-
-    return df_standardized
+    return (df_standardized - df_standardized.mean()) / df_standardized.std()
 
 
 # Given a dataframe df and a number of clusters k, return a pandas series y
 # specifying an assignment of instances to clusters, using kmeans++.
 # y should contain values from the set {0,1,...,k-1}.
-def kmeans(df: DataFrame, k: int) -> pd.Series:
+def kmeans(df: DataFrame, k: int) -> Series:
     """
     Given a dataframe df and a number of clusters k, return a pandas series y
     specifying an assignment of instances to clusters, using kmeans.
     y should contain values in the set {0,1,...,k-1}.
-    To see the impact of the random initialization,
-    using only one set of initial centroids in the kmeans run.
-    """
-    # Explicitly set init='random' for standard K-means
-    kmeans_model = KMeans(n_clusters=k, init="random", random_state=42)
-    kmeans_model.fit(df)
-    y = pd.Series(kmeans_model.labels_, index=df.index)
+    Uses only one set of initial centroids to observe initialization impact.
 
-    return y
+    Args:
+        df: The pandas dataframe containing the data set.
+        k: The number of clusters.
+    Returns:
+        A pandas series specifying an assignment of instances to clusters.
+    """
+    kmeans_model = KMeans(n_clusters=k, init="random", n_init=1, random_state=42)
+    kmeans_model.fit(df)
+    return pd.Series(kmeans_model.labels_, index=df.index)
 
 
 # Given a dataframe df and a number of clusters k, return a pandas series y
@@ -103,14 +107,18 @@ def kmeans_plus(df: DataFrame, k: int) -> Series:
     Given a dataframe df and a number of clusters k, return a pandas series y
     specifying an assignment of instances to clusters, using kmeans++.
     y should contain values from the set {0,1,...,k-1}.
+
+    Args:
+        df: The pandas dataframe containing the data set.
+        k: The number of clusters.
+    Returns:
+        A pandas series specifying an assignment of instances to clusters.
     """
     # Initialize KMeans with k clusters and kmeans++ initialization
     # In scikit-learn, init='k-means++' is the default
     kmeans_model = KMeans(n_clusters=k, init="k-means++", random_state=42)
     kmeans_model.fit(df)
-    y = pd.Series(kmeans_model.labels_, index=df.index)
-
-    return y
+    return pd.Series(kmeans_model.labels_, index=df.index)
 
 
 # Given a data set X and an assignment to clusters y
@@ -120,11 +128,16 @@ def agglomerative(df: DataFrame, k: int) -> Series:
     Given a dataframe df and a number of clusters k, return a pandas series y
     specifying an assignment of instances to clusters, using agglomerative hierarchical clustering.
     y should contain values from the set {0,1,...,k-1}.
+
+    Args:
+        df: The pandas dataframe containing the data set.
+        k: The number of clusters.
+    Returns:
+        A pandas series specifying an assignment of instances to clusters.
     """
     agg = AgglomerativeClustering(n_clusters=k)
     agg.fit(df)
-    y = pd.Series(agg.labels_, index=df.index)
-    return y
+    return pd.Series(agg.labels_, index=df.index)
 
 
 # Perform the cluster evaluation described in the coursework description.
@@ -139,6 +152,12 @@ def clustering_score(X: DataFrame, y: Series) -> float:
     """
     Given a data set X and an assignment to clusters y
     return the Silhouette score of this set of clusters.
+
+    Args:
+        X: The pandas dataframe containing the data set.
+        y: A pandas series specifying an assignment of instances to clusters.
+    Returns:
+        The Silhouette score of the set of clusters.
     """
     # The silhouette score is only defined if k is between 2 and n-1 where n is the number of samples
     if len(set(y)) <= 1 or len(set(y)) >= len(X):
@@ -159,10 +178,15 @@ def cluster_evaluation(df: DataFrame) -> DataFrame:
     'data' type: either 'Original' or 'Standardized',
     'k': the number of clusters produced,
     'Silhouette Score': for evaluating the resulting set of clusters.
+
+    Args:
+        df: The pandas dataframe containing the data set.
+    Returns:
+        A pandas dataframe with the clustering evaluation results.
     """
     df_standardized: DataFrame = standardize(df)
     k_values: List[int] = [3, 5, 10]
-    results: list = []
+    results: list[dict[str, Any]] = []
 
     for k in k_values:
         # For each data type (original and standardized)
@@ -185,7 +209,7 @@ def cluster_evaluation(df: DataFrame) -> DataFrame:
                 kmeans_model = KMeans(n_clusters=k, random_state=i)
                 kmeans_model.fit(data)
                 y_kmeans = pd.Series(kmeans_model.labels_, index=data.index)
-                score_kmeans = clustering_score(data, y_kmeans)
+                score_kmeans: float = clustering_score(data, y_kmeans)
                 results.append(
                     {
                         "Algorithm": "Kmeans",
@@ -196,14 +220,18 @@ def cluster_evaluation(df: DataFrame) -> DataFrame:
                 )
 
     # Convert the results to a pandas DataFrame
-    results_df = pd.DataFrame(results)
-    return results_df
+    return pd.DataFrame(results)
 
 
 def best_clustering_score(rdf: DataFrame) -> float:
     """
     Given the performance evaluation dataframe produced by the cluster_evaluation function,
     return the best computed Silhouette score.
+
+    Args:
+        rdf: The pandas dataframe with the clustering evaluation results.
+    Returns:
+        The best computed Silhouette score.
     """
     return rdf["Silhouette Score"].max()
 
@@ -217,6 +245,11 @@ def scatter_plots(df: DataFrame) -> None:
     Generate a scatter plot for each pair of attributes.
     Data points in different clusters should appear with different colors.
     Each plot is saved to a file in the project root directory.
+
+    Args:
+        df: The pandas dataframe containing the data set.
+    Returns:
+        None
     """
     df_standardized: DataFrame = standardize(df)
     y: Series = kmeans(df_standardized, 3)
