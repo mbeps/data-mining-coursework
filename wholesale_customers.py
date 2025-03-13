@@ -205,10 +205,7 @@ def cluster_evaluation(df: DataFrame) -> DataFrame:
 
             # Run k-means 10 times with different initializations
             for i in range(10):
-                # Create a new KMeans instance with a different random_state for each run
-                kmeans_model = KMeans(n_clusters=k, random_state=i)
-                kmeans_model.fit(data)
-                y_kmeans = pd.Series(kmeans_model.labels_, index=data.index)
+                y_kmeans: Series = kmeans(data, k)
                 score_kmeans: float = clustering_score(data, y_kmeans)
                 results.append(
                     {
